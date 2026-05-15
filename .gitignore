@@ -1,0 +1,24 @@
+# Node.js / Backend
+backend/node_modules/
+backend/package-lock.json
+
+# Entornos / variables sensibles
+backend/.env
+.env
+
+# Docker (volúmenes, logs)
+mysql_data/
+docker-compose.override.yml
+*.log
+
+# Editores / sistema
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+
+# Archivos temporales del frontend
+frontend/.cache/
+*.tmp

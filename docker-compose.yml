@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: sigic-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: sigic_espoch
+      MYSQL_USER: sigic_user
+      MYSQL_PASSWORD: sigic_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - sigic-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: sigic-backend
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_USER: sigic_user
+      DB_PASSWORD: sigic_pass
+      DB_NAME: sigic_espoch
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - sigic-network
+
+  # Frontend con Nginx
+  frontend:
+    build: ./frontend
+    container_name: sigic-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sigic-network
+
+volumes:
+  mysql_data:
+
+networks:
+  sigic-network:
+    driver: bridge
