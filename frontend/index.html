@@ -4,266 +4,887 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGIC-ESPOCH | Inicio de Sesión</title>
-    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            position: relative;
+            background: #e8ecf1;
+            overflow-y: auto;
         }
-        .login-container {
-            width: 100%;
-            max-width: 450px;
-            padding: 2rem;
-        }
-        .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            animation: fadeInUp 0.5s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .login-header { text-align: center; margin-bottom: 2rem; }
-        .login-logo {
-            width: 80px; height: 80px;
-            background: linear-gradient(135deg, #0066CC, #004C99);
-            border-radius: 20px;
+
+        /* ============================================
+           FONDO CON LOGO A COLOR
+           ============================================ */
+        .bg-logo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            background: linear-gradient(160deg, #e8ecf1 0%, #d5dce4 50%, #c5cdd8 100%);
         }
-        .login-logo i { font-size: 3rem; color: white; }
-        .login-header h1 { font-size: 1.75rem; color: #1a1a2e; margin-bottom: 0.5rem; }
-        .login-header p { color: #6c757d; font-size: 0.9rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2d3748; }
-        .input-group { position: relative; }
-        .input-group i {
+
+        /* Efecto de luz suave con colores institucionales */
+        .bg-logo::before {
+            content: '';
             position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #a0aec0;
+            top: -30%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(204,0,0,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
+
+        .bg-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(26,122,58,0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .bg-logo img {
+            width: 100%;
+            max-width: 480px;
+            height: auto;
+            opacity: 0.30;
+            filter: contrast(0.9) brightness(1);
+            user-select: none;
+            pointer-events: none;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bg-logo .institution-name {
+            position: relative;
+            z-index: 1;
+            color: rgba(0,0,0,0.10);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            pointer-events: none;
+            user-select: none;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .bg-logo .institution-name .sub {
+            font-weight: 300;
+            font-size: 0.9rem;
+            letter-spacing: 8px;
+            color: rgba(0,0,0,0.07);
+        }
+
+        /* ============================================
+           TARJETA DE LOGIN
+           ============================================ */
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            margin: 20px 0;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 2.5rem 2.5rem 2rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.10), 0 8px 24px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.7);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .login-card::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .login-card::-webkit-scrollbar-thumb {
+            background: #CC0000;
+            border-radius: 4px;
+        }
+
+        .login-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header .mini-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: #CC0000;
+            border-radius: 16px;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 8px 24px rgba(204,0,0,0.20);
+        }
+
+        .login-header .mini-logo i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            letter-spacing: -0.5px;
+        }
+
+        .login-header h1 span {
+            color: #CC0000;
+        }
+
+        .login-header .subtitle {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 400;
+            margin-top: 0.1rem;
+        }
+
+        .login-header .badge {
+            display: inline-block;
+            background: rgba(204,0,0,0.08);
+            color: #CC0000;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .login-header .badge i {
+            margin-right: 0.4rem;
+        }
+
+        /* ============================================
+           FORM
+           ============================================ */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group label i {
+            color: #CC0000;
+            margin-right: 0.4rem;
+            font-size: 0.75rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
         .input-group input {
             width: 100%;
-            padding: 0.875rem 1rem 0.875rem 2.75rem;
-            border: 2px solid #e2e8f0;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.25s;
+            background: rgba(248,250,252,0.8);
+            color: #1a1a2e;
         }
+
         .input-group input:focus {
             outline: none;
-            border-color: #0066CC;
-            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+            border-color: #CC0000;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(204,0,0,0.06);
         }
-        .login-btn {
+
+        .input-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #a0aec0;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            padding: 0.3rem;
+        }
+
+        .password-toggle:hover {
+            color: #CC0000;
+        }
+
+        /* ============================================
+           OPTIONS
+           ============================================ */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0 1.5rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #CC0000;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn-login {
             width: 100%;
-            padding: 0.875rem;
-            background: linear-gradient(135deg, #0066CC, #004C99);
+            padding: 0.85rem;
+            background: #CC0000;
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(0,102,204,0.4);
-        }
-        .demo-credentials {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-        }
-        .demo-credentials p {
-            font-size: 0.8rem;
-            color: #718096;
-            margin-bottom: 0.75rem;
-            text-align: center;
-        }
-        .demo-buttons {
+            transition: all 0.25s;
             display: flex;
-            gap: 0.75rem;
+            align-items: center;
             justify-content: center;
+            gap: 0.5rem;
         }
-        .demo-btn {
-            padding: 0.5rem 1rem;
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+
+        .btn-login:hover {
+            background: #b30000;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(204,0,0,0.25);
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================
+           REGISTER SECTION
+           ============================================ */
+        .register-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1.5px solid rgba(240,242,245,0.8);
+        }
+
+        .register-toggle {
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0 auto;
+            padding: 0.3rem 1rem;
+        }
+
+        .register-toggle:hover {
+            color: #CC0000;
+        }
+
+        .register-toggle i {
             font-size: 0.75rem;
+        }
+
+        .register-form {
+            display: none;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1.5px solid rgba(240,242,245,0.8);
+        }
+
+        .register-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .register-form h4 {
+            font-size: 0.95rem;
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .register-form h4 i {
+            color: #1A7A3A;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 0.8rem;
+            background: #1A7A3A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-register:hover {
+            background: #14632e;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(26,122,58,0.25);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.7rem;
+            background: transparent;
+            color: #6c757d;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .demo-btn:hover {
-            background: #edf2f7;
-            border-color: #0066CC;
+
+        .btn-cancel:hover {
+            background: rgba(248,250,252,0.8);
         }
-        .error-message {
-            background: #fed7d7;
-            color: #c53030;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+
+        /* ============================================
+           MESSAGES
+           ============================================ */
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
             font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+        }
+
+        .message i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #CC0000;
             display: none;
         }
-        .footer {
+
+        .message.error.show {
+            display: flex;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #1A7A3A;
+            display: none;
+        }
+
+        .message.success.show {
+            display: flex;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .login-footer {
             text-align: center;
-            margin-top: 2rem;
-            color: rgba(255,255,255,0.7);
-            font-size: 0.8rem;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1.5px solid rgba(240,242,245,0.8);
+        }
+
+        .login-footer .help-text {
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+
+        .login-footer .help-text i {
+            color: #CC0000;
+            margin-right: 0.3rem;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(160,174,192,0.6);
+            font-size: 0.7rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-footer .sep {
+            color: rgba(204,0,0,0.3);
+            font-size: 0.5rem;
+            margin: 0 0.4rem;
+        }
+
+        .page-footer strong {
+            color: rgba(73,80,87,0.5);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.8rem 1.5rem;
+                border-radius: 20px;
+            }
+
+            .bg-logo img {
+                max-width: 250px;
+                opacity: 0.25;
+            }
+
+            .bg-logo .institution-name {
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+
+            .bg-logo .institution-name .sub {
+                font-size: 0.65rem;
+                letter-spacing: 5px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+
+            .btn-login, .btn-register {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 1.2rem 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <!-- ============================================
+    FONDO CON LOGO A COLOR
+    ============================================ -->
+    <div class="bg-logo">
+        <img 
+            src="assets/logo-espoch.png" 
+            alt="ESPOCH Logo"
+            onerror="this.style.display='none'"
+        >
+        <div class="institution-name">
+            ESCUELA SUPERIOR POLITÉCNICA<br>DE CHIMBORAZO
+            <div class="sub">FUNDADA EN 1972 · RIOBAMBA - ECUADOR</div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TARJETA DE LOGIN
+    ============================================ -->
+    <div class="login-wrapper">
         <div class="login-card">
+
+            <!-- HEADER -->
             <div class="login-header">
-                <div class="login-logo">
+                <div class="mini-logo">
                     <i class="fas fa-network-wired"></i>
                 </div>
-                <h1>SIGIC-ESPOCH</h1>
-                <p>Sistema de Gestión de Inventario y Cursos</p>
-                <small>Programa CISCO - ESPOCH</small>
+                <h1>SIGIC<span>-ESPOCH</span></h1>
+                <p class="subtitle">Sistema de Gestión de Inventario y Cursos</p>
+                <span class="badge"><i class="fas fa-graduation-cap"></i> Programa CISCO</span>
             </div>
 
-            <div id="error-message" class="error-message"></div>
+            <!-- MESSAGES -->
+            <div id="errorMessage" class="message error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">Error</span>
+            </div>
+            <div id="successMessage" class="message success">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText">Éxito</span>
+            </div>
 
-            <form id="login-form">
+            <!-- LOGIN FORM -->
+            <form id="loginForm">
                 <div class="form-group">
-                    <label>Usuario / Email</label>
+                    <label><i class="fas fa-envelope"></i>Correo Institucional</label>
                     <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="username" placeholder="Ingresa tu usuario" required>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            placeholder="nombre.apellido@espoch.edu.ec" 
+                            required
+                            pattern="[a-zA-Z0-9._%+-]+@espoch\.edu\.ec"
+                        >
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Contraseña</label>
+                    <label><i class="fas fa-lock"></i>Contraseña</label>
                     <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Ingresa tu contraseña" 
+                            required
+                        >
+                        <button type="button" class="password-toggle" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="login-btn">
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        Recordarme
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">
                     <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                 </button>
             </form>
 
-            <div class="demo-credentials">
-                <p><i class="fas fa-info-circle"></i> Credenciales de demostración:</p>
-                <div class="demo-buttons">
-                    <button type="button" class="demo-btn" onclick="setDemoCredentials('custodio')">
-                        <i class="fas fa-user-shield"></i> Custodio
-                    </button>
-                    <button type="button" class="demo-btn" onclick="setDemoCredentials('consultor')">
-                        <i class="fas fa-eye"></i> Consultor
-                    </button>
-                    <button type="button" class="demo-btn" onclick="setDemoCredentials('admin')">
-                        <i class="fas fa-crown"></i> Administrador
-                    </button>
+            <!-- REGISTER SECTION -->
+            <div class="register-section">
+                <button type="button" class="register-toggle" id="toggleRegister">
+                    <i class="fas fa-user-plus"></i> Registrar nuevo administrador
+                </button>
+
+                <div class="register-form" id="registerForm">
+                    <h4><i class="fas fa-user-shield"></i> Crear Administrador</h4>
+                    <form id="registerFormSubmit">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i>Correo Institucional *</label>
+                            <div class="input-group">
+                                <input 
+                                    type="email" 
+                                    id="regEmail" 
+                                    placeholder="nombre.apellido@espoch.edu.ec" 
+                                    required
+                                    pattern="[a-zA-Z0-9._%+-]+@espoch\.edu\.ec"
+                                >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i>Nombre Completo *</label>
+                            <div class="input-group">
+                                <input type="text" id="regName" placeholder="Nombres y Apellidos" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i>Contraseña *</label>
+                            <div class="input-group">
+                                <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-register">
+                            <i class="fas fa-user-plus"></i> Crear Administrador
+                        </button>
+                        <button type="button" class="btn-cancel" id="cancelRegister">
+                            Cancelar
+                        </button>
+                    </form>
                 </div>
-                <p style="margin-top: 0.75rem; font-size: 0.7rem;">
-                    Custodio: custodio@espoch.edu.ec / 123456<br>
-                    Consultor: consultor@espoch.edu.ec / 123456<br>
-                    Admin: admin@espoch.edu.ec / 123456
+            </div>
+
+            <!-- FOOTER -->
+            <div class="login-footer">
+                <p class="help-text">
+                    <i class="fas fa-info-circle"></i>
+                    Contacte al administrador para obtener sus credenciales
                 </p>
             </div>
+
         </div>
-        <div class="footer">
-            <p>ESPOCH - Facultad de Informática y Electrónica © 2026</p>
+
+        <div class="page-footer">
+            <strong>ESPOCH</strong>
+            <span class="sep">•</span>
+            Facultad de Informática y Electrónica
+            <span class="sep">•</span>
+            Academia Cisco © 2026
         </div>
     </div>
 
     <script>
-        const users = {
-            custodio: {
-                username: 'custodio@espoch.edu.ec',
-                password: '123456',
-                name: 'Ana María López',
-                role: 'Custodio',
-                role_code: 'custodio'
-            },
-            consultor: {
-                username: 'consultor@espoch.edu.ec',
-                password: '123456',
-                name: 'Carlos Consultor',
-                role: 'Consultor',
-                role_code: 'consultor'
-            },
-            admin: {
-                username: 'admin@espoch.edu.ec',
-                password: '123456',
-                name: 'Administrador SIGIC',
-                role: 'Administrador',
-                role_code: 'admin'
-            }
-        };
+        // ============================================
+        // USERS STORAGE
+        // ============================================
+        function getUsers() {
+            const stored = localStorage.getItem('sigic_users');
+            if (stored) return JSON.parse(stored);
+            
+            const defaultUsers = {
+                custodio: {
+                    username: 'vinicio.ramos@espoch.edu.ec',
+                    password: '0602899684',
+                    name: 'Vinicio Ramos Valencia',
+                    role: 'Custodio / Coordinador CISCO',
+                    role_code: 'custodio',
+                    cedula: '0602899684'
+                },
+                admin1: {
+                    username: 'admin@espoch.edu.ec',
+                    password: 'admin2026',
+                    name: 'Administrador SIGIC',
+                    role: 'Administrador',
+                    role_code: 'admin'
+                }
+            };
+            localStorage.setItem('sigic_users', JSON.stringify(defaultUsers));
+            return defaultUsers;
+        }
 
-        window.setDemoCredentials = function(type) {
-            const user = users[type];
-            if (user) {
-                document.getElementById('username').value = user.username;
-                document.getElementById('password').value = user.password;
-            }
-        };
+        function saveUsers(users) {
+            localStorage.setItem('sigic_users', JSON.stringify(users));
+        }
 
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        // ============================================
+        // TOGGLE PASSWORD
+        // ============================================
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const input = document.getElementById('loginPassword');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        // ============================================
+        // TOGGLE REGISTER
+        // ============================================
+        document.getElementById('toggleRegister').addEventListener('click', function() {
+            const form = document.getElementById('registerForm');
+            form.classList.toggle('active');
+            this.innerHTML = form.classList.contains('active') 
+                ? '<i class="fas fa-times"></i> Cancelar registro' 
+                : '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
+            
+            if (!form.classList.contains('active')) {
+                document.getElementById('registerFormSubmit').reset();
+            }
+        });
+
+        document.getElementById('cancelRegister').addEventListener('click', function() {
+            document.getElementById('registerForm').classList.remove('active');
+            document.getElementById('toggleRegister').innerHTML = '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
+            document.getElementById('registerFormSubmit').reset();
+        });
+
+        // ============================================
+        // SHOW/HIDE MESSAGES
+        // ============================================
+        function showError(text) {
+            const el = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = text;
+            el.classList.add('show');
+            document.getElementById('successMessage').classList.remove('show');
+            setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        function showSuccess(text) {
+            const el = document.getElementById('successMessage');
+            document.getElementById('successText').textContent = text;
+            el.classList.add('show');
+            document.getElementById('errorMessage').classList.remove('show');
+            setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ============================================
+        // REGISTER ADMIN
+        // ============================================
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error-message');
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const name = document.getElementById('regName').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
 
-            let authenticatedUser = null;
+            if (!email.endsWith('@espoch.edu.ec')) {
+                showError('Debe ser un correo institucional (@espoch.edu.ec)');
+                return;
+            }
+
+            if (!name) {
+                showError('El nombre completo es obligatorio');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+
+            const users = getUsers();
             for (let key in users) {
-                if (users[key].username === username && users[key].password === password) {
-                    authenticatedUser = users[key];
+                if (users[key].username === email) {
+                    showError('Este correo ya está registrado');
+                    return;
+                }
+            }
+
+            users['admin_' + Date.now()] = {
+                username: email,
+                password: password,
+                name: name,
+                role: 'Administrador',
+                role_code: 'admin'
+            };
+
+            saveUsers(users);
+            showSuccess('✅ Administrador creado exitosamente. Ya puedes iniciar sesión.');
+            document.getElementById('registerFormSubmit').reset();
+            
+            setTimeout(function() {
+                document.getElementById('registerForm').classList.remove('active');
+                document.getElementById('toggleRegister').innerHTML = '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
+            }, 3000);
+        });
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email.endsWith('@espoch.edu.ec')) {
+                showError('Debes usar un correo institucional (@espoch.edu.ec)');
+                return;
+            }
+
+            const users = getUsers();
+            let user = null;
+            for (let key in users) {
+                if (users[key].username === email && users[key].password === password) {
+                    user = users[key];
                     break;
                 }
             }
 
-            if (authenticatedUser) {
-                const session = {
-                    user: authenticatedUser,
-                    loggedIn: true,
-                    timestamp: new Date().toISOString()
-                };
+            if (user) {
+                const session = { user: user, loggedIn: true, timestamp: new Date().toISOString() };
+                if (document.getElementById('rememberMe').checked) {
+                    localStorage.setItem('sigic_remember', 'true');
+                } else {
+                    localStorage.removeItem('sigic_remember');
+                }
                 localStorage.setItem('sigic_session', JSON.stringify(session));
                 window.location.href = 'dashboard.html';
             } else {
-                errorDiv.textContent = '❌ Usuario o contraseña incorrectos';
-                errorDiv.style.display = 'block';
-                setTimeout(function() {
-                    errorDiv.style.display = 'none';
-                }, 3000);
+                showError('Usuario o contraseña incorrectos');
             }
         });
 
-        const existingSession = localStorage.getItem('sigic_session');
-        if (existingSession) {
+        // ============================================
+        // SESSION CHECK
+        // ============================================
+        const session = localStorage.getItem('sigic_session');
+        if (session) {
             try {
-                const session = JSON.parse(existingSession);
-                if (session.loggedIn) {
+                if (JSON.parse(session).loggedIn) {
                     window.location.href = 'dashboard.html';
                 }
             } catch(e) {}
+        }
+
+        if (localStorage.getItem('sigic_remember') === 'true') {
+            document.getElementById('rememberMe').checked = true;
         }
     </script>
 </body>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,304 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Estilos específicos para el dashboard con colores ESPOCH */
+        .sidebar {
+            background: linear-gradient(180deg, #8B1A1A 0%, #CC0000 50%, #1A7A3A 100%);
+        }
+
+        .sidebar-header {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .logo-container i {
+            color: #FFD700;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #FFD700;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-card:nth-child(1)::before {
+            background: #CC0000;
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: #1A7A3A;
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: #CC9900;
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: #8B1A1A;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #CC0000, #8B1A1A);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #8B1A1A, #660000);
+            box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+        }
+
+        .btn-outline {
+            border-color: #CC0000;
+            color: #CC0000;
+        }
+
+        .btn-outline:hover {
+            background: #CC0000;
+            color: white;
+        }
+
+        .top-header {
+            border-bottom: 3px solid #CC0000;
+        }
+
+        .header-title h1 {
+            color: #8B1A1A;
+        }
+
+        .date-badge {
+            background: #FFE5E5;
+            color: #8B1A1A;
+        }
+
+        .estado-bueno {
+            background: #E5F5EB;
+            color: #1A7A3A;
+        }
+
+        .estado-regular {
+            background: #FFF8E5;
+            color: #CC9900;
+        }
+
+        .estado-critico {
+            background: #FFE5E5;
+            color: #CC0000;
+        }
+
+        .course-header {
+            background: linear-gradient(135deg, #CC0000, #8B1A1A);
+        }
+
+        .btn-icon-sm {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+        }
+
+        .btn-edit {
+            background: rgba(204, 0, 0, 0.1);
+            color: #CC0000;
+        }
+
+        .btn-edit:hover {
+            background: #CC0000;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(139, 26, 26, 0.1);
+            color: #8B1A1A;
+        }
+
+        .btn-delete:hover {
+            background: #8B1A1A;
+            color: white;
+        }
+
+        .btn-icon-sm i {
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-badge.prestado {
+            background: #FFE5E5;
+            color: #CC0000;
+        }
+
+        .status-badge.devuelto {
+            background: #E5F5EB;
+            color: #1A7A3A;
+        }
+
+        .activity-table td {
+            vertical-align: middle;
+        }
+
+        .data-table td {
+            vertical-align: middle;
+        }
+
+        .data-table small {
+            font-size: 0.7rem;
+        }
+
+        .estado-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .estado-bueno {
+            background: #E5F5EB;
+            color: #1A7A3A;
+        }
+
+        .estado-regular {
+            background: #FFF8E5;
+            color: #CC9900;
+        }
+
+        .estado-critico {
+            background: #FFE5E5;
+            color: #CC0000;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #CC0000;
+            box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+        }
+
+        .modal-content {
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #CC0000;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 0.75rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.4rem 0.3rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -33,17 +330,10 @@
                     <i class="fas fa-chalkboard-user"></i>
                     <span>Cursos</span>
                 </button>
-                <button class="nav-item" data-module="prestamos">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Préstamos</span>
-                </button>
-                <button class="nav-item" data-module="documentacion">
-                    <i class="fas fa-book"></i>
-                    <span>Documentación</span>
-                </button>
+
             </nav>
             <div class="sidebar-footer">
-                <div class="user-profile" id="user-profile">
+                <div class="user-profile">
                     <i class="fas fa-user-circle"></i>
                     <div>
                         <span class="user-name" id="user-name">Cargando...</span>
@@ -51,8 +341,7 @@
                     </div>
                 </div>
                 <button class="logout-btn" id="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar Sesión</span>
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </button>
             </div>
         </aside>
@@ -61,17 +350,12 @@
         <main class="main-content">
             <header class="top-header">
                 <div class="header-title">
-                    <h1>Laboratorio Cisco</h1>
-                    <p>Gestión de Inventario y Cursos - ESPOCH</p>
+                    <h1>Laboratorio Cisco - ESPOCH</h1>
+                    <p>Gestión de Inventario y Cursos - Programa CISCO</p>
                 </div>
                 <div class="header-actions">
-                    <span class="date-badge">
-                        <i class="far fa-calendar-alt"></i>
-                        <span id="current-date"></span>
-                    </span>
-                    <button class="btn-icon" id="refresh-btn">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                    <span class="date-badge"><i class="far fa-calendar-alt"></i> <span id="current-date"></span></span>
+                    <button class="btn-icon" id="refresh-btn"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </header>
 
@@ -79,90 +363,62 @@
             <div id="dashboard-module" class="module active">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-microchip"></i>
-                        </div>
                         <div class="stat-info">
                             <h3 id="total-activos">0</h3>
                             <p>Total de Activos</p>
                         </div>
+                        <div class="stat-icon blue"><i class="fas fa-microchip"></i></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fas fa-chalkboard"></i>
-                        </div>
                         <div class="stat-info">
                             <h3 id="cursos-activos">0</h3>
                             <p>Cursos Activos</p>
                         </div>
+                        <div class="stat-icon green"><i class="fas fa-chalkboard"></i></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon purple">
-                            <i class="fas fa-users"></i>
-                        </div>
                         <div class="stat-info">
                             <h3 id="estudiantes-total">0</h3>
                             <p>Estudiantes Registrados</p>
                         </div>
+                        <div class="stat-icon purple"><i class="fas fa-users"></i></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
                         <div class="stat-info">
                             <h3 id="alertas-mantenimiento">0</h3>
                             <p>Alertas Mantenimiento</p>
                         </div>
+                        <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
                     </div>
                 </div>
-
                 <div class="charts-row">
                     <div class="chart-card">
-                        <div class="card-header">
-                            <h3>Distribución de Activos por Categoría</h3>
-                        </div>
+                        <h3>Distribución de Activos</h3>
                         <canvas id="activosChart"></canvas>
                     </div>
                     <div class="chart-card">
-                        <div class="card-header">
-                            <h3>Estado de Equipos por Depreciación</h3>
-                        </div>
+                        <h3>Estado de Equipos</h3>
                         <canvas id="estadoChart"></canvas>
                     </div>
                 </div>
-
-                <div class="activity-row">
-                    <div class="activity-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-clock"></i> Actividad Reciente / Préstamos</h3>
-                        </div>
-                        <div class="activity-table-container">
-                            <table class="activity-table">
-                                <thead>
-                                    <tr><th>USUARIO</th><th>EQUIPO</th><th>ESTADO</th><th>FECHA</th></tr>
-                                </thead>
-                                <tbody id="activity-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="quick-access-card">
-                        <div class="card-header">
-                            <h3>Infraestructura de Red</h3>
-                        </div>
-                        <div class="rack-list">
-                            <div class="rack-item">
-                                <i class="fas fa-server"></i>
-                                <div><strong>Cuadro Distribución Principal</strong><span>RACK-A1</span></div>
-                            </div>
-                            <div class="rack-item">
-                                <i class="fas fa-network-wired"></i>
-                                <div><strong>Switches de Laboratorio</strong><span>RACK-B2</span></div>
-                            </div>
-                            <div class="rack-item">
-                                <i class="fas fa-wifi"></i>
-                                <div><strong>Controladores Inalámbricos</strong><span>RACK-C1</span></div>
-                            </div>
-                        </div>
+                <div class="activity-card">
+                    <h3><i class="fas fa-clock" style="color: #CC0000;"></i> Actividad Reciente</h3>
+                    <div class="activity-table-container">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>USUARIO</th>
+                                    <th>EQUIPO</th>
+                                    <th>ESTADO</th>
+                                    <th>FECHA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity-tbody">
+                                <tr>
+                                    <td colspan="4" class="loading">Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -189,8 +445,23 @@
                 </div>
                 <div class="table-container">
                     <table class="data-table">
-                        <thead><tr><th>Código</th><th>Nombre</th><th>Valor</th><th>% Dep.</th><th>Estado</th><th>Acciones</th></tr></thead>
-                        <tbody id="inventario-body"></tbody>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre / Serie</th>
+                                <th>Modelo / Marca</th>
+                                <th>Ubicación / Bodega</th>
+                                <th>Valor</th>
+                                <th>% Dep.</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventario-body">
+                            <tr>
+                                <td colspan="8" class="loading">Cargando...</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -203,170 +474,803 @@
                         <i class="fas fa-plus"></i> Nuevo Curso
                     </button>
                 </div>
-                <div class="courses-grid" id="cursos-container"></div>
-            </div>
-
-            <!-- Préstamos Module -->
-            <div id="prestamos-module" class="module">
-                <div class="module-header">
-                    <h2><i class="fas fa-exchange-alt"></i> Préstamos de Equipos</h2>
-                    <button class="btn btn-primary" id="btn-nuevo-prestamo">
-                        <i class="fas fa-plus"></i> Nuevo Préstamo
-                    </button>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Usuario</th><th>Equipo</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
-                        <tbody id="prestamos-body"></tbody>
-                    </table>
+                <div class="courses-grid" id="cursos-container">
+                    <div class="loading">Cargando...</div>
                 </div>
             </div>
 
-            <!-- Documentación Module -->
-            <div id="documentacion-module" class="module">
-                <div class="module-header">
-                    <h2><i class="fas fa-book"></i> Documentación</h2>
-                </div>
-                <div class="docs-container">
-                    <div class="doc-card"><i class="fas fa-file-alt fa-3x"></i><h3>SRS IEEE 830</h3><button class="btn btn-outline" onclick="alert('Documentación SRS')">Ver</button></div>
-                    <div class="doc-card"><i class="fas fa-diagram-project fa-3x"></i><h3>Diagramas UML</h3><button class="btn btn-outline" onclick="alert('Diagramas UML')">Ver</button></div>
-                    <div class="doc-card"><i class="fas fa-database fa-3x"></i><h3>Modelo de Datos</h3><button class="btn btn-outline" onclick="alert('Modelo ER')">Ver</button></div>
-                </div>
-            </div>
+
         </main>
     </div>
 
-    <!-- Modales -->
-    <div id="modal-bien" class="modal"><div class="modal-content"><span class="close">&times;</span><h3>Agregar Equipo</h3><form id="form-bien"><input type="hidden" id="bien-id"><div class="form-group"><label>Código</label><input type="text" id="codigo" required></div><div class="form-group"><label>Nombre</label><input type="text" id="nombre" required></div><div class="form-group"><label>Serie</label><input type="text" id="serie"></div><div class="form-row"><div class="form-group"><label>Valor Contable</label><input type="number" id="valor_contable" step="0.01" required></div><div class="form-group"><label>Depreciación</label><input type="number" id="depreciacion_acumulada" step="0.01" value="0"></div></div><button type="submit" class="btn btn-primary">Guardar</button></form></div></div>
+    <!-- Modal Agregar/Editar Bien - CON TODOS LOS CAMPOS -->
+    <div id="modal-bien" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modal-title">Agregar Equipo</h3>
+            <form id="form-bien">
+                <input type="hidden" id="bien-id">
 
-    <div id="modal-curso" class="modal"><div class="modal-content"><span class="close">&times;</span><h3>Nuevo Curso</h3><form id="form-curso"><input type="hidden" id="curso-id"><div class="form-group"><label>Nombre</label><input type="text" id="curso-nombre" required></div><div class="form-group"><label>Participantes</label><input type="number" id="curso-participantes" min="0" required></div><button type="submit" class="btn btn-primary">Guardar</button></form></div></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código *</label>
+                        <input type="text" id="codigo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código Anterior</label>
+                        <input type="text" id="codigo_anterior">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="nombre" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Serie</label>
+                        <input type="text" id="serie">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="modelo">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="marca">
+                    </div>
+                    <div class="form-group">
+                        <label>Bodega</label>
+                        <input type="text" id="bodega">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <input type="text" id="ubicacion">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Registro</label>
+                        <input type="text" id="tipo_registro" placeholder="BLD, BCA, etc.">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Ingreso</label>
+                        <input type="date" id="fecha_ingreso">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Asignación</label>
+                        <input type="date" id="fecha_asignacion">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>N° Acta</label>
+                        <input type="text" id="numero_acta">
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="cantidad" value="1" min="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Valor Contable *</label>
+                        <input type="number" id="valor_contable" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Depreciación Acumulada</label>
+                        <input type="number" id="depreciacion_acumulada" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Estado Manual (1,2,3,4,5)</label>
+                    <input type="text" id="estado_manual" placeholder="Ej: 1, 2, 3, 4, 5">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar Equipo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Curso -->
+    <div id="modal-curso" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modal-curso-title">Nuevo Curso</h3>
+            <form id="form-curso">
+                <input type="hidden" id="curso-id">
+                <div class="form-group">
+                    <label>Nombre del Curso *</label>
+                    <input type="text" id="curso-nombre" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Instructor *</label>
+                        <input type="text" id="curso-instructor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Periodo *</label>
+                        <input type="text" id="curso-periodo" placeholder="Ej: Abril - Agosto 2026" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Participantes *</label>
+                        <input type="number" id="curso-participantes" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="curso-estado">
+                            <option value="activo">Activo</option>
+                            <option value="finalizado">Finalizado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/api';
-        
-        // Verificar autenticación
+        // ============================================
+        // CONFIGURACIÓN DE API
+        // ============================================
+        const API_BASE_URL = 'http://localhost:3002/api';
+
+        // ============================================
+        // NOTIFICACIONES Y ALERTAS (SWEETALERT2)
+        // ============================================
+        const Alert = {
+            success: (title, text = '') => {
+                return Swal.fire({
+                    icon: 'success',
+                    title: title,
+                    text: text,
+                    confirmButtonColor: '#1A7A3A', // Verde FIE
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            },
+            error: (title, text = '') => {
+                return Swal.fire({
+                    icon: 'error',
+                    title: title,
+                    text: text,
+                    confirmButtonColor: '#CC0000' // Rojo ESPOCH
+                });
+            },
+            info: (title, text = '') => {
+                return Swal.fire({
+                    icon: 'info',
+                    title: title,
+                    text: text,
+                    confirmButtonColor: '#CC0000' // Rojo ESPOCH
+                });
+            },
+            toast: (icon, message) => {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    iconColor: icon === 'success' ? '#1A7A3A' : '#CC0000',
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    }
+                });
+                return Toast.fire({
+                    icon: icon,
+                    title: message
+                });
+            },
+            confirm: async (title, text, confirmText = 'Sí, dar de baja', cancelText = 'Cancelar') => {
+                const result = await Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#CC0000', // Rojo ESPOCH
+                    cancelButtonColor: '#2D3748',  // Gris oscuro
+                    confirmButtonText: confirmText,
+                    cancelButtonText: cancelText,
+                    reverseButtons: true
+                });
+                return result.isConfirmed;
+            }
+        };
+
+        // API helper
+        const API = {
+            get: async (endpoint) => {
+                const response = await fetch(API_BASE_URL + endpoint);
+                return response.json();
+            },
+            post: async (endpoint, data) => {
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                return response.json();
+            },
+            put: async (endpoint, data) => {
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                return response.json();
+            },
+            delete: async (endpoint) => {
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: 'DELETE'
+                });
+                return response.json();
+            }
+        };
+
+        // ============================================
+        // VERIFICAR AUTENTICACIÓN
+        // ============================================
         const session = JSON.parse(localStorage.getItem('sigic_session') || '{}');
         if (!session.loggedIn) {
             window.location.href = 'index.html';
         }
-        
-        // Mostrar info del usuario
+
         document.getElementById('user-name').textContent = session.user?.name || 'Usuario';
         document.getElementById('user-role').textContent = session.user?.role || '';
-        
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // ============================================
+        // LOGOUT
+        // ============================================
+        document.getElementById('logout-btn').addEventListener('click', function () {
             localStorage.removeItem('sigic_session');
             window.location.href = 'index.html';
         });
-        
-        // Fecha actual
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        // Navegación
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        // ============================================
+        // FUNCIONES DE API
+        // ============================================
+        async function fetchAPI(endpoint) {
+            try {
+                const response = await fetch(API_BASE_URL + endpoint);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching ' + endpoint + ':', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // ============================================
+        // DASHBOARD
+        // ============================================
+        async function cargarDashboard() {
+            console.log('Cargando dashboard...');
+
+            try {
+                // Cargar bienes
+                const bienesData = await fetchAPI('/bienes');
+                console.log('Bienes recibidos:', bienesData);
+
+                if (bienesData.success && bienesData.data) {
+                    var bienes = bienesData.data;
+                    document.getElementById('total-activos').textContent = bienes.length;
+
+                    var criticos = bienes.filter(function (b) { return b.estado === 'CRÍTICO'; }).length;
+                    document.getElementById('alertas-mantenimiento').textContent = criticos;
+
+                    // Calcular distribución por categoría
+                    var routers = bienes.filter(function (b) { return b.nombre && b.nombre.toLowerCase().includes('router'); }).length;
+                    var switches = bienes.filter(function (b) { return b.nombre && b.nombre.toLowerCase().includes('switch'); }).length;
+                    var accesorios = bienes.filter(function (b) {
+                        return b.nombre && (b.nombre.toLowerCase().includes('cable') ||
+                            b.nombre.toLowerCase().includes('adaptador') ||
+                            b.nombre.toLowerCase().includes('teclado') ||
+                            b.nombre.toLowerCase().includes('mouse') ||
+                            b.nombre.toLowerCase().includes('kit') ||
+                            b.nombre.toLowerCase().includes('soporte'));
+                    }).length;
+                    var otros = bienes.length - routers - switches - accesorios;
+
+                    // Estado de equipos
+                    var buenos = bienes.filter(function (b) { return b.estado === 'BUENO'; }).length;
+                    var regulares = bienes.filter(function (b) { return b.estado === 'REGULAR'; }).length;
+
+                    // Gráfico de distribución
+                    var ctx1 = document.getElementById('activosChart').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Routers', 'Switches', 'Accesorios', 'Otros'],
+                            datasets: [{
+                                label: 'Cantidad',
+                                data: [routers, switches, accesorios, otros],
+                                backgroundColor: ['#CC0000', '#1A7A3A', '#CC9900', '#8B1A1A'],
+                                borderRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+
+                    // Gráfico de estados
+                    var ctx2 = document.getElementById('estadoChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Bueno', 'Regular', 'Crítico'],
+                            datasets: [{
+                                data: [buenos, regulares, criticos],
+                                backgroundColor: ['#1A7A3A', '#CC9900', '#CC0000'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+
+                // Cargar cursos
+                var cursosData = await fetchAPI('/cursos');
+                console.log('Cursos recibidos:', cursosData);
+
+                if (cursosData.success && cursosData.data) {
+                    var cursos = cursosData.data;
+                    var activos = cursos.filter(function (c) { return c.estado === 'activo'; }).length;
+                    var estudiantes = 0;
+                    for (var i = 0; i < cursos.length; i++) {
+                        estudiantes += (cursos[i].participantes || 0);
+                    }
+                    document.getElementById('cursos-activos').textContent = activos;
+                    document.getElementById('estudiantes-total').textContent = estudiantes;
+                }
+
+                // Actividad reciente
+                document.getElementById('activity-tbody').innerHTML =
+                    '<tr>' +
+                    '<td><strong>Vinicio Ramos</strong><br><small>Coordinador CISCO</small></td>' +
+                    '<td>Router CISCO 2911</td>' +
+                    '<td><span class="status-badge prestado">En uso</span></td>' +
+                    '<td>Hoy, ' + new Date().toLocaleTimeString() + '</td>' +
+                    '</tr>';
+
+            } catch (error) {
+                console.error('Error en cargarDashboard:', error);
+            }
+        }
+
+        // ============================================
+        // INVENTARIO - CON TODOS LOS CAMPOS
+        // ============================================
+        var inventarioData = [];
+
+        async function cargarInventario() {
+            var tbody = document.getElementById('inventario-body');
+            tbody.innerHTML = '<tr><td colspan="8" class="loading">Cargando...</td></tr>';
+
+            try {
+                var data = await fetchAPI('/bienes');
+                if (data.success && data.data) {
+                    inventarioData = data.data;
+                    renderInventario(inventarioData);
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="8" class="error">Error cargando datos</td></tr>';
+            }
+        }
+
+        function renderInventario(data) {
+            var tbody = document.getElementById('inventario-body');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="loading">No hay equipos registrados</td></tr>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                var b = data[i];
+                var estadoClass = '';
+                if (b.estado === 'BUENO') { estadoClass = 'estado-bueno'; }
+                else if (b.estado === 'REGULAR') { estadoClass = 'estado-regular'; }
+                else { estadoClass = 'estado-critico'; }
+
+                html += '<tr>' +
+                    '<td><strong>' + (b.codigo || 'N/A') + '</strong></td>' +
+                    '<td>' +
+                    '<strong>' + (b.nombre || 'N/A') + '</strong>' +
+                    '<br><small style="color:#6c757d;">' + (b.serie || '') + '</small>' +
+                    '</td>' +
+                    '<td>' +
+                    '<strong>' + (b.modelo || 'N/A') + '</strong>' +
+                    '<br><small style="color:#6c757d;">' + (b.marca || '') + '</small>' +
+                    '</td>' +
+                    '<td>' +
+                    '<strong>' + (b.ubicacion || 'No asignada') + '</strong>' +
+                    '<br><small style="color:#6c757d;">' + (b.bodega || '') + '</small>' +
+                    '</td>' +
+                    '<td>$' + parseFloat(b.valor_contable || 0).toFixed(2) + '</td>' +
+                    '<td>' + parseFloat(b.porcentaje_depreciacion || 0).toFixed(1) + '%</td>' +
+                    '<td><span class="estado-badge ' + estadoClass + '">' + b.estado + '</span></td>' +
+                    '<td>' +
+                    '<div class="action-buttons">' +
+                    '<button class="btn-icon-sm btn-edit" onclick="editarBien(' + b.id + ')" title="Editar">' +
+                    '<i class="fas fa-edit"></i>' +
+                    '</button>' +
+                    '<button class="btn-icon-sm btn-delete" onclick="eliminarBien(' + b.id + ')" title="Eliminar">' +
+                    '<i class="fas fa-trash"></i>' +
+                    '</button>' +
+                    '</div>' +
+                    '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        // Filtros
+        document.getElementById('search-equipo')?.addEventListener('input', function () {
+            var term = this.value.toLowerCase();
+            var filtered = inventarioData.filter(function (b) {
+                return (b.codigo && b.codigo.toLowerCase().includes(term)) ||
+                    (b.nombre && b.nombre.toLowerCase().includes(term)) ||
+                    (b.marca && b.marca.toLowerCase().includes(term)) ||
+                    (b.serie && b.serie.toLowerCase().includes(term));
+            });
+            renderInventario(filtered);
+        });
+
+        document.getElementById('filter-estado')?.addEventListener('change', function () {
+            var estado = this.value;
+            if (!estado) {
+                renderInventario(inventarioData);
+                return;
+            }
+            var filtered = inventarioData.filter(function (b) { return b.estado === estado; });
+            renderInventario(filtered);
+        });
+
+        // ============================================
+        // CURSOS
+        // ============================================
+        async function cargarCursos() {
+            var container = document.getElementById('cursos-container');
+            container.innerHTML = '<div class="loading">Cargando...</div>';
+
+            try {
+                var data = await fetchAPI('/cursos');
+                if (data.success && data.data) {
+                    var html = '';
+                    for (var i = 0; i < data.data.length; i++) {
+                        var c = data.data[i];
+                        var porcentaje = Math.min(100, (c.participantes / 30) * 100);
+                        var estadoClass = '';
+                        if (c.estado === 'activo') { estadoClass = 'activo'; }
+                        else if (c.estado === 'finalizado') { estadoClass = 'finalizado'; }
+                        else { estadoClass = 'cancelado'; }
+
+                        html += '<div class="course-card">' +
+                            '<div class="course-header">' +
+                            '<h3>' + c.nombre + '</h3>' +
+                            '<span class="course-status ' + estadoClass + '">' + c.estado + '</span>' +
+                            '</div>' +
+                            '<div class="course-body">' +
+                            '<p style="margin-bottom: 0.5rem;"><i class="fas fa-user-tie" style="color: #CC0000; width: 20px;"></i> <strong>Instructor:</strong> ' + (c.instructor || 'No asignado') + '</p>' +
+                            '<p style="margin-bottom: 0.5rem;"><i class="fas fa-calendar-alt" style="color: #CC0000; width: 20px;"></i> <strong>Periodo:</strong> ' + (c.periodo || 'No asignado') + '</p>' +
+                            '<p style="margin-bottom: 0.5rem;"><i class="fas fa-users" style="color: #CC0000; width: 20px;"></i> <strong>Estudiantes:</strong> ' + c.participantes + '</p>' +
+                            '<div class="progress-bar-container" style="margin: 0.75rem 0 0.25rem 0;">' +
+                            '<div class="progress-bar" style="width: ' + porcentaje + '%;"></div>' +
+                            '</div>' +
+                            '<small style="color:#6c757d;">Capacidad m&aacute;xima: 30 estudiantes</small>' +
+                            '</div>' +
+                            '<div class="course-footer" style="justify-content: flex-end;">' +
+                            '<div class="action-buttons">' +
+                            '<button class="btn-icon-sm btn-edit" onclick="editarCurso(' + c.id + ')" title="Editar">' +
+                            '<i class="fas fa-edit"></i>' +
+                            '</button>' +
+                            '<button class="btn-icon-sm btn-delete" onclick="eliminarCurso(' + c.id + ')" title="Eliminar">' +
+                            '<i class="fas fa-trash"></i>' +
+                            '</button>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
+                    }
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error cargando cursos</div>';
+            }
+        }
+
+        // ============================================
+        // NAVEGACIÓN
+        // ============================================
+        document.querySelectorAll('.nav-item').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var module = btn.dataset.module;
+
+                document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
                 btn.classList.add('active');
-                document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
-                document.getElementById(`${btn.dataset.module}-module`).classList.add('active');
-                if (btn.dataset.module === 'inventario') cargarInventario();
-                if (btn.dataset.module === 'cursos') cargarCursos();
+
+                document.querySelectorAll('.module').forEach(function (m) { m.classList.remove('active'); });
+                document.getElementById(module + '-module').classList.add('active');
+
+                if (module === 'inventario') cargarInventario();
+                if (module === 'cursos') cargarCursos();
+                if (module === 'dashboard') cargarDashboard();
             });
         });
-        
-        // API helper
-        const API = {
-            get: async (endpoint) => { const res = await fetch(`${API_BASE_URL}${endpoint}`); return res.json(); },
-            post: async (endpoint, data) => { const res = await fetch(`${API_BASE_URL}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return res.json(); },
-            put: async (endpoint, data) => { const res = await fetch(`${API_BASE_URL}${endpoint}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); return res.json(); },
-            delete: async (endpoint) => { const res = await fetch(`${API_BASE_URL}${endpoint}`, { method: 'DELETE' }); return res.json(); }
+
+        document.getElementById('refresh-btn').addEventListener('click', function () {
+            cargarDashboard();
+            cargarInventario();
+            cargarCursos();
+        });
+
+        // ============================================
+        // MODALES
+        // ============================================
+        document.getElementById('btn-agregar-bien').addEventListener('click', function () {
+            document.getElementById('modal-title').textContent = 'Agregar Equipo';
+            document.getElementById('form-bien').reset();
+            document.getElementById('bien-id').value = '';
+            document.getElementById('modal-bien').style.display = 'block';
+        });
+
+        document.getElementById('btn-agregar-curso').addEventListener('click', function () {
+            document.getElementById('modal-curso-title').textContent = 'Nuevo Curso';
+            document.getElementById('form-curso').reset();
+            document.getElementById('curso-id').value = '';
+            document.getElementById('modal-curso').style.display = 'block';
+        });
+
+        document.querySelectorAll('.close').forEach(function (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                document.getElementById('modal-bien').style.display = 'none';
+                document.getElementById('modal-curso').style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', function (e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // ============================================
+        // EDITAR BIEN - CON TODOS LOS CAMPOS
+        // ============================================
+        window.editarBien = async function (id) {
+            try {
+                var response = await API.get('/bienes/' + id);
+                if (response.success && response.data) {
+                    var b = response.data;
+
+                    document.getElementById('modal-title').textContent = 'Editar Equipo';
+                    document.getElementById('bien-id').value = b.id;
+                    document.getElementById('codigo').value = b.codigo || '';
+                    document.getElementById('codigo_anterior').value = b.codigo_anterior || '';
+                    document.getElementById('nombre').value = b.nombre || '';
+                    document.getElementById('serie').value = b.serie || '';
+                    document.getElementById('modelo').value = b.modelo || '';
+                    document.getElementById('marca').value = b.marca || '';
+                    document.getElementById('bodega').value = b.bodega || '';
+                    document.getElementById('ubicacion').value = b.ubicacion || '';
+                    document.getElementById('tipo_registro').value = b.tipo_registro || '';
+                    document.getElementById('fecha_ingreso').value = b.fecha_ingreso ? b.fecha_ingreso.split('T')[0] : '';
+                    document.getElementById('fecha_asignacion').value = b.fecha_asignacion ? b.fecha_asignacion.split('T')[0] : '';
+                    document.getElementById('numero_acta').value = b.numero_acta || '';
+                    document.getElementById('cantidad').value = b.cantidad || 1;
+                    document.getElementById('valor_contable').value = b.valor_contable || 0;
+                    document.getElementById('depreciacion_acumulada').value = b.depreciacion_acumulada || 0;
+                    document.getElementById('estado_manual').value = b.estado_manual || '';
+
+                    document.getElementById('modal-bien').style.display = 'block';
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudieron cargar los datos del equipo');
+                console.error(error);
+            }
         };
-        
-        // Cargar inventario
-        async function cargarInventario() {
-            const response = await API.get('/bienes');
-            if (response.success) {
-                const tbody = document.getElementById('inventario-body');
-                tbody.innerHTML = response.data.map(b => `
-                    <tr>
-                        <td>${b.codigo}</td>
-                        <td>${b.nombre}</td>
-                        <td>$${b.valor_contable}</td>
-                        <td>${b.porcentaje_depreciacion}%</td>
-                        <td><span class="estado-badge ${b.estado === 'BUENO' ? 'estado-bueno' : (b.estado === 'REGULAR' ? 'estado-regular' : 'estado-critico')}">${b.estado}</span></td>
-                        <td><button class="btn-icon-sm btn-edit" onclick="alert('Editar ${b.id}')"><i class="fas fa-edit"></i></button></td>
-                    </tr>
-                `).join('');
+
+        // ============================================
+        // ELIMINAR BIEN (SOFT DELETE)
+        // ============================================
+        window.eliminarBien = async function (id) {
+            const confirmar = await Alert.confirm(
+                '¿Dar de baja?',
+                '¿Estás seguro de dar de baja este equipo?',
+                'Sí, dar de baja',
+                'Cancelar'
+            );
+            if (!confirmar) return;
+
+            try {
+                var response = await API.delete('/bienes/' + id);
+                if (response.success) {
+                    Alert.toast('success', 'Equipo dado de baja exitosamente');
+                    cargarInventario();
+                    cargarDashboard();
+                } else {
+                    Alert.error('Error', response.error || 'No se pudo eliminar el equipo');
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudo completar la eliminación del equipo');
+                console.error(error);
             }
-        }
-        
-        async function cargarCursos() {
-            const response = await API.get('/cursos');
-            if (response.success) {
-                const container = document.getElementById('cursos-container');
-                container.innerHTML = response.data.map(c => `
-                    <div class="course-card">
-                        <div class="course-header"><h3>${c.nombre}</h3><span class="course-status">${c.estado}</span></div>
-                        <div class="course-body"><p><i class="fas fa-users"></i> ${c.participantes} estudiantes</p><div class="progress-bar-container"><div class="progress-bar" style="width: ${(c.participantes/30)*100}%"></div></div></div>
-                    </div>
-                `).join('');
+        };
+
+        // ============================================
+        // GUARDAR BIEN - CON TODOS LOS CAMPOS
+        // ============================================
+        document.getElementById('form-bien').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var bienId = document.getElementById('bien-id').value;
+            var data = {
+                codigo: document.getElementById('codigo').value,
+                codigo_anterior: document.getElementById('codigo_anterior').value || null,
+                nombre: document.getElementById('nombre').value,
+                serie: document.getElementById('serie').value || null,
+                modelo: document.getElementById('modelo').value || null,
+                marca: document.getElementById('marca').value || null,
+                bodega: document.getElementById('bodega').value || null,
+                ubicacion: document.getElementById('ubicacion').value || null,
+                tipo_registro: document.getElementById('tipo_registro').value || null,
+                fecha_ingreso: document.getElementById('fecha_ingreso').value || null,
+                fecha_asignacion: document.getElementById('fecha_asignacion').value || null,
+                numero_acta: document.getElementById('numero_acta').value || null,
+                cantidad: parseInt(document.getElementById('cantidad').value) || 1,
+                valor_contable: parseFloat(document.getElementById('valor_contable').value) || 0,
+                depreciacion_acumulada: parseFloat(document.getElementById('depreciacion_acumulada').value) || 0,
+                estado_manual: document.getElementById('estado_manual').value || null
+            };
+
+            try {
+                var response;
+                if (bienId) {
+                    response = await API.put('/bienes/' + bienId, data);
+                } else {
+                    response = await API.post('/bienes', data);
+                }
+
+                if (response.success) {
+                    Alert.toast('success', 'Equipo guardado exitosamente');
+                    document.getElementById('modal-bien').style.display = 'none';
+                    cargarInventario();
+                    cargarDashboard();
+                } else {
+                    Alert.error('Error', response.error || 'No se pudo guardar el equipo');
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudo completar la operación');
+                console.error(error);
             }
-        }
-        
-        // Cargar dashboard
-        async function cargarDashboard() {
-            const bienes = await API.get('/bienes');
-            const cursos = await API.get('/cursos');
-            if (bienes.success) {
-                const criticos = bienes.data.filter(b => b.estado === 'CRÍTICO').length;
-                document.getElementById('total-activos').textContent = bienes.total;
-                document.getElementById('alertas-mantenimiento').textContent = criticos;
+        });
+
+        // ============================================
+        // FORMULARIO CURSO
+        // ============================================
+        document.getElementById('form-curso').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var cursoId = document.getElementById('curso-id').value;
+            var cursoData = {
+                nombre: document.getElementById('curso-nombre').value,
+                participantes: parseInt(document.getElementById('curso-participantes').value) || 0,
+                instructor: document.getElementById('curso-instructor').value || null,
+                periodo: document.getElementById('curso-periodo').value || null,
+                estado: document.getElementById('curso-estado').value || 'activo'
+            };
+
+            try {
+                var response;
+                if (cursoId) {
+                    response = await API.put('/cursos/' + cursoId, cursoData);
+                } else {
+                    response = await API.post('/cursos', cursoData);
+                }
+
+                if (response.success) {
+                    Alert.toast('success', 'Curso guardado exitosamente');
+                    document.getElementById('modal-curso').style.display = 'none';
+                    cargarCursos();
+                    cargarDashboard();
+                } else {
+                    Alert.error('Error', response.error || 'No se pudo guardar el curso');
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudo completar la operación');
+                console.error(error);
             }
-            if (cursos.success) {
-                const activos = cursos.data.filter(c => c.estado === 'activo').length;
-                const estudiantes = cursos.data.reduce((s, c) => s + (c.participantes || 0), 0);
-                document.getElementById('cursos-activos').textContent = activos;
-                document.getElementById('estudiantes-total').textContent = estudiantes;
+        });
+
+        // ============================================
+        // EDITAR CURSO
+        // ============================================
+        window.editarCurso = async function (id) {
+            try {
+                var response = await API.get('/cursos/' + id);
+                if (response.success && response.data) {
+                    var c = response.data;
+
+                    document.getElementById('modal-curso-title').textContent = 'Editar Curso';
+                    document.getElementById('curso-id').value = c.id;
+                    document.getElementById('curso-nombre').value = c.nombre || '';
+                    document.getElementById('curso-participantes').value = c.participantes !== undefined ? c.participantes : 0;
+                    document.getElementById('curso-instructor').value = c.instructor || '';
+                    document.getElementById('curso-periodo').value = c.periodo || '';
+                    document.getElementById('curso-estado').value = c.estado || 'activo';
+
+                    document.getElementById('modal-curso').style.display = 'block';
+                } else {
+                    Alert.error('Error', response.error || 'No se pudieron cargar los datos del curso');
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudieron cargar los datos del curso');
+                console.error(error);
             }
-            
-            // Gráficos
-            new Chart(document.getElementById('activosChart'), { type: 'bar', data: { labels: ['Routers', 'Switches', 'Accesorios'], datasets: [{ label: 'Cantidad', data: [12, 24, 8], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'] }] } });
-            new Chart(document.getElementById('estadoChart'), { type: 'doughnut', data: { labels: ['Bueno', 'Regular', 'Crítico'], datasets: [{ data: [bienes.success ? bienes.data.filter(b => b.estado === 'BUENO').length : 0, bienes.success ? bienes.data.filter(b => b.estado === 'REGULAR').length : 0, bienes.success ? bienes.data.filter(b => b.estado === 'CRÍTICO').length : 0], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }] } });
-            
-            // Actividad reciente
-            document.getElementById('activity-tbody').innerHTML = `
-                <tr><td><strong>John Doe</strong><br><small>Estudiante</small></td><td>Switch Cisco 2960</td><td><span class="status-badge prestado">Prestado</span></td><td>Hoy, 09:42</td></tr>
-                <tr><td><strong>Alan Smith</strong><br><small>Profesor</small></td><td>Router Cisco 4331</td><td><span class="status-badge devuelto">Devuelto</span></td><td>Ayer, 16:15</td></tr>
-            `;
-        }
-        
-        // Inicializar
+        };
+
+        // ============================================
+        // ELIMINAR CURSO
+        // ============================================
+        window.eliminarCurso = async function (id) {
+            const confirmar = await Alert.confirm(
+                '¿Eliminar curso?',
+                '¿Estás seguro de eliminar este curso?',
+                'Sí, eliminar',
+                'Cancelar'
+            );
+            if (!confirmar) return;
+
+            try {
+                var response = await API.delete('/cursos/' + id);
+                if (response.success) {
+                    Alert.toast('success', 'Curso eliminado exitosamente');
+                    cargarCursos();
+                    cargarDashboard();
+                } else {
+                    Alert.error('Error', response.error || 'No se pudo eliminar el curso');
+                }
+            } catch (error) {
+                Alert.error('Error', 'No se pudo completar la eliminación del curso');
+                console.error(error);
+            }
+        };
+
+        // ============================================
+        // INICIALIZAR
+        // ============================================
         cargarDashboard();
         cargarInventario();
         cargarCursos();
-        
-        // Botones modales
-        document.getElementById('btn-agregar-bien')?.addEventListener('click', () => document.getElementById('modal-bien').style.display = 'block');
-        document.getElementById('btn-agregar-curso')?.addEventListener('click', () => document.getElementById('modal-curso').style.display = 'block');
-        document.querySelectorAll('.close').forEach(c => c.addEventListener('click', function() { this.closest('.modal').style.display = 'none'; }));
-        
-        // Formularios
-        document.getElementById('form-bien')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await API.post('/bienes', { codigo: document.getElementById('codigo').value, nombre: document.getElementById('nombre').value, serie: document.getElementById('serie').value, valor_contable: parseFloat(document.getElementById('valor_contable').value), depreciacion_acumulada: parseFloat(document.getElementById('depreciacion_acumulada').value) });
-            document.getElementById('modal-bien').style.display = 'none';
-            cargarInventario();
-            cargarDashboard();
-        });
-        
-        document.getElementById('form-curso')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await API.post('/cursos', { nombre: document.getElementById('curso-nombre').value, participantes: parseInt(document.getElementById('curso-participantes').value) });
-            document.getElementById('modal-curso').style.display = 'none';
-            cargarCursos();
-            cargarDashboard();
-        });
     </script>
 </body>
+
 </html>

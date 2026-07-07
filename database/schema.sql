@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS cursos (
     nombre VARCHAR(100) NOT NULL,
     participantes INT DEFAULT 0,
     instructor VARCHAR(100),
-    horario VARCHAR(100),
+    periodo VARCHAR(100),
     estado ENUM('activo', 'finalizado', 'cancelado') DEFAULT 'activo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -56,9 +56,9 @@ INSERT INTO bienes (codigo, nombre, serie, modelo, marca, ubicacion, valor_conta
 ('RTR-004', 'Router Cisco 2901', 'FGL19123XYZ', '2901', 'Cisco', 'RACK-A1', 1800.00, 1600.00, 1, '2020-11-20'),
 ('SW-005', 'Switch Cisco 3750', 'FD02873B2C', '3750', 'Cisco', 'RACK-B2', 950.00, 920.00, 3, '2019-03-05');
 
-INSERT INTO cursos (nombre, participantes, instructor, horario, estado) VALUES
-('CCNAv7: Introducción a Redes', 25, 'Ing. Vinicio Ramos', 'Lun/Mie 14:00-16:00', 'activo'),
-('CCNA Security', 18, 'Ing. Carlos Álvaro', 'Mar/Jue 10:00-12:00', 'activo'),
-('Cisco CyberOps Associate', 12, 'Ing. Bryan Caguana', 'Vie 08:00-12:00', 'activo'),
-('CCNP Enterprise', 30, 'Ing. Marco López', 'Lun/Mie 16:00-18:00', 'finalizado'),
-('Fundamentos de IoT', 8, 'Ing. Ana Torres', 'Mar 14:00-16:00', 'cancelado');
+INSERT INTO cursos (nombre, participantes, instructor, periodo, estado) VALUES
+('CCNAv7: Introducción a Redes', 25, 'Ing. Vinicio Ramos', '2026-I', 'activo'),
+('CCNA Security', 18, 'Ing. Carlos Álvaro', '2026-I', 'activo'),
+('Cisco CyberOps Associate', 12, 'Ing. Bryan Caguana', '2026-I', 'activo'),
+('CCNP Enterprise', 30, 'Ing. Marco López', '2025-II', 'finalizado'),
+('Fundamentos de IoT', 8, 'Ing. Ana Torres', '2026-I', 'cancelado');

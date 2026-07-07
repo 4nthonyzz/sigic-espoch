@@ -1,3 +1,5 @@
+// backend/controllers/bienController.js
+
 const Bien = require('../models/Bien');
 
 const bienController = {
@@ -30,16 +32,16 @@ const bienController = {
         }
     },
     
-    // RF-04: Actualizar bien
-    update: async (req, res) => {
+    // OBTENER BIEN POR ID - ¡AGREGAR ESTO!
+    getById: async (req, res) => {
         try {
-            const { id } = req.params;
-            const actualizado = await Bien.update(id, req.body);
+            const id = parseInt(req.params.id, 10);
+            const bien = await Bien.findById(id);
             
-            if (actualizado) {
+            if (bien) {
                 res.json({
                     success: true,
-                    message: 'Bien actualizado exitosamente'
+                    data: bien
                 });
             } else {
                 res.status(404).json({
@@ -48,15 +50,40 @@ const bienController = {
                 });
             }
         } catch (error) {
-            res.status(400).json({ success: false, error: error.message });
+            res.status(500).json({ success: false, error: error.message });
         }
     },
     
-    // RF-05: Soft delete
+    // RF-04: Actualizar bien
+    update: async (req, res) => {
+        try {
+            const id = parseInt(req.params.id, 10);
+            const actualizado = await Bien.update(id, req.body);
+            
+            if (actualizado) {
+                const bienActualizado = await Bien.findById(id);
+                res.json({
+                    success: true,
+                    message: 'Bien actualizado exitosamente',
+                    data: bienActualizado
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    error: 'El registro no existe o no sufrió modificaciones reales en la base de datos'
+                });
+            }
+        } catch (error) {
+            const status = error.message.includes('RN-01') ? 409 : 400;
+            res.status(status).json({ success: false, error: error.message });
+        }
+    },
+    
+    // RF-05: Hard delete
     delete: async (req, res) => {
         try {
-            const { id } = req.params;
-            const eliminado = await Bien.softDelete(id);
+            const id = parseInt(req.params.id, 10);
+            const eliminado = await Bien.delete(id);
             
             if (eliminado) {
                 res.json({
@@ -66,7 +93,7 @@ const bienController = {
             } else {
                 res.status(404).json({
                     success: false,
-                    error: 'Bien no encontrado'
+                    error: 'El registro no existe o no sufrió modificaciones reales en la base de datos'
                 });
             }
         } catch (error) {

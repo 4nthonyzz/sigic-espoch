@@ -1,108 +1,93 @@
 // SIGIC-ESPOCH - Módulo de Inventario
-// Cumple con RF-01, RF-02, RF-03, RF-04, RF-05
 
 let inventarioData = [];
 
-// Cargar inventario desde la API
 async function cargarInventario() {
     const tbody = document.getElementById('inventario-body');
-    tbody.innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando inventario...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando equipos...</td></tr>';
     
     try {
         const response = await API.get('/bienes');
+        console.log('📦 Inventario cargado:', response);
         
         if (response.success && response.data) {
             inventarioData = response.data;
             renderInventario(inventarioData);
         } else {
-            // Datos de demostración para visualización
-            mostrarDatosDemostracion();
+            tbody.innerHTML = '<tr><td colspan="10" class="error">❌ Error al cargar los equipos</td></tr>';
         }
     } catch (error) {
         console.error('Error cargando inventario:', error);
-        mostrarDatosDemostracion();
+        tbody.innerHTML = '<tr><td colspan="10" class="error">❌ Error de conexión con el servidor</td></tr>';
     }
 }
 
-// Mostrar datos de demostración (cuando el backend no está disponible)
-function mostrarDatosDemostracion() {
-    const equiposDemo = [
-        { id: 1, codigo: 'RTR-001', nombre: 'Router Cisco 4331', serie: 'FGL22102ABC', modelo: '4331', marca: 'Cisco', valor_contable: 2500, depreciacion_acumulada: 500, porcentaje_depreciacion: 20, estado: 'BUENO', ubicacion: 'RACK-A1' },
-        { id: 2, codigo: 'SW-002', nombre: 'Switch Cisco 2960', serie: 'FD02149Z0A1', modelo: '2960', marca: 'Cisco', valor_contable: 1200, depreciacion_acumulada: 300, porcentaje_depreciacion: 25, estado: 'BUENO', ubicacion: 'RACK-B2' },
-        { id: 3, codigo: 'ACC-003', nombre: 'Console Cable Bundle', serie: 'KIT-CC-09', modelo: 'CAB-CONSOLE', marca: 'Cisco', valor_contable: 45, depreciacion_acumulada: 5, porcentaje_depreciacion: 11.11, estado: 'BUENO', ubicacion: 'LAB-A' },
-        { id: 4, codigo: 'RTR-004', nombre: 'Router Cisco 2901', serie: 'FGL19123XYZ', modelo: '2901', marca: 'Cisco', valor_contable: 1800, depreciacion_acumulada: 1600, porcentaje_depreciacion: 88.89, estado: 'REGULAR', ubicacion: 'RACK-A1' },
-        { id: 5, codigo: 'SW-005', nombre: 'Switch Cisco 3750', serie: 'FD02873B2C', modelo: '3750', marca: 'Cisco', valor_contable: 950, depreciacion_acumulada: 920, porcentaje_depreciacion: 96.84, estado: 'CRÍTICO', ubicacion: 'RACK-B2' }
-    ];
-    
-    inventarioData = equiposDemo;
-    renderInventario(inventarioData);
-}
-
-// Renderizar tabla de inventario
 function renderInventario(data) {
     const tbody = document.getElementById('inventario-body');
     
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="loading">No hay equipos registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="loading">No hay equipos registrados</td></tr>';
         return;
     }
     
-    tbody.innerHTML = data.map(bien => `
-        <tr>
-            <td><input type="checkbox" class="select-item" data-id="${bien.id}"></td>
-            <td><strong>${escapeHtml(bien.codigo)}</strong></td>
-            <td>
-                <strong>${escapeHtml(bien.nombre)}</strong><br>
-                <small style="color: #666;">${escapeHtml(bien.modelo || '')} / ${escapeHtml(bien.marca || '')}</small>
-            </td>
-            <td><small>${escapeHtml(bien.serie || 'N/A')}</small></td>
-            <td>$${Number(bien.valor_contable).toFixed(2)}</td>
-            <td>${Number(bien.porcentaje_depreciacion || 0).toFixed(1)}%</td>
-            <td>${getEstadoBadge(bien.estado)}</td>
-            <td>${escapeHtml(bien.ubicacion || 'No asignada')}</td>
-            <td class="action-buttons">
-                <button class="btn-icon-sm btn-edit" onclick="editarBien(${bien.id})" title="Editar">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn-icon-sm btn-delete" onclick="eliminarBien(${bien.id})" title="Eliminar">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-    
-    // Actualizar contador de selección
-    actualizarSelectorTodos();
+    tbody.innerHTML = data.map(b => {
+        const estadoClass = b.estado === 'BUENO' ? 'estado-bueno' : 
+                           (b.estado === 'REGULAR' ? 'estado-regular' : 'estado-critico');
+        return `
+            <tr>
+                <td><strong>${b.codigo || 'N/A'}</strong></td>
+                <td>
+                    <strong>${b.nombre || 'N/A'}</strong>
+                    <br><small style="color:#6c757d;">${b.serie || ''}</small>
+                </td>
+                <td>
+                    <strong>${b.modelo || 'N/A'}</strong>
+                    <br><small style="color:#6c757d;">${b.marca || ''}</small>
+                </td>
+                <td>
+                    <strong>${b.ubicacion || 'No asignada'}</strong>
+                    <br><small style="color:#6c757d;">${b.bodega || ''}</small>
+                </td>
+                <td>$${parseFloat(b.valor_contable || 0).toFixed(2)}</td>
+                <td>${parseFloat(b.porcentaje_depreciacion || 0).toFixed(1)}%</td>
+                <td><span class="estado-badge ${estadoClass}">${b.estado || 'N/A'}</span></td>
+                <td>
+                    <button class="btn-icon-sm btn-edit" onclick="editarBien(${b.id})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon-sm btn-delete" onclick="eliminarBien(${b.id})" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-// Obtener badge de estado según tipo
-function getEstadoBadge(estado) {
-    const clases = {
-        'BUENO': 'estado-bueno',
-        'REGULAR': 'estado-regular',
-        'CRÍTICO': 'estado-critico'
-    };
-    const textos = {
-        'BUENO': '✓ Bueno',
-        'REGULAR': '⚠ Regular',
-        'CRÍTICO': '🔴 Crítico'
-    };
-    return `<span class="estado-badge ${clases[estado] || 'estado-regular'}">${textos[estado] || estado}</span>`;
-}
+// Filtros
+document.getElementById('search-equipo')?.addEventListener('input', function() {
+    const term = this.value.toLowerCase();
+    const filtered = inventarioData.filter(b => 
+        (b.codigo && b.codigo.toLowerCase().includes(term)) ||
+        (b.nombre && b.nombre.toLowerCase().includes(term)) ||
+        (b.marca && b.marca.toLowerCase().includes(term)) ||
+        (b.serie && b.serie.toLowerCase().includes(term))
+    );
+    renderInventario(filtered);
+});
 
-// Escapar HTML para prevenir XSS (RNF-05)
-function escapeHtml(str) {
-    if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+document.getElementById('filter-estado')?.addEventListener('change', function() {
+    const estado = this.value;
+    if (!estado) {
+        renderInventario(inventarioData);
+        return;
+    }
+    const filtered = inventarioData.filter(b => b.estado === estado);
+    renderInventario(filtered);
+});
 
-// Abrir modal para agregar bien
-document.getElementById('btn-agregar-bien')?.addEventListener('click', () => {
+// Modal para agregar bien
+document.getElementById('btn-agregar-bien')?.addEventListener('click', function() {
     document.getElementById('modal-title').textContent = 'Agregar Equipo';
     document.getElementById('form-bien').reset();
     document.getElementById('bien-id').value = '';
@@ -110,147 +95,136 @@ document.getElementById('btn-agregar-bien')?.addEventListener('click', () => {
 });
 
 // Cerrar modales
-document.querySelectorAll('.close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', () => {
+document.querySelectorAll('.close').forEach(function(btn) {
+    btn.addEventListener('click', function() {
         document.getElementById('modal-bien').style.display = 'none';
         document.getElementById('modal-curso').style.display = 'none';
-        document.getElementById('modal-prestamo').style.display = 'none';
     });
 });
 
-// Cerrar modal al hacer click fuera
-window.addEventListener('click', (e) => {
+window.addEventListener('click', function(e) {
     if (e.target.classList.contains('modal')) {
         e.target.style.display = 'none';
     }
 });
 
-// Guardar bien (crear o actualizar)
-document.getElementById('form-bien')?.addEventListener('submit', async (e) => {
+// ============================================
+// GUARDAR BIEN (CREAR O EDITAR) - CON TODOS LOS CAMPOS
+// ============================================
+document.getElementById('form-bien')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const bienId = document.getElementById('bien-id').value;
-    const bienData = {
+    const data = {
         codigo: document.getElementById('codigo').value,
+        codigo_anterior: document.getElementById('codigo_anterior')?.value || null,
         nombre: document.getElementById('nombre').value,
-        serie: document.getElementById('serie').value,
-        modelo: document.getElementById('modelo')?.value || '',
-        marca: document.getElementById('marca').value,
-        ubicacion: document.getElementById('ubicacion').value,
-        valor_contable: parseFloat(document.getElementById('valor_contable').value),
+        serie: document.getElementById('serie').value || null,
+        modelo: document.getElementById('modelo')?.value || null,
+        marca: document.getElementById('marca').value || null,
+        bodega: document.getElementById('bodega')?.value || null,
+        ubicacion: document.getElementById('ubicacion').value || null,
+        tipo_registro: document.getElementById('tipo_registro')?.value || null,
+        fecha_ingreso: document.getElementById('fecha_ingreso').value || null,
+        fecha_asignacion: document.getElementById('fecha_asignacion')?.value || null,
+        numero_acta: document.getElementById('numero_acta')?.value || null,
+        cantidad: parseInt(document.getElementById('cantidad')?.value) || 1,
+        valor_contable: parseFloat(document.getElementById('valor_contable').value) || 0,
         depreciacion_acumulada: parseFloat(document.getElementById('depreciacion_acumulada').value) || 0,
-        custodio_id: parseInt(document.getElementById('custodio_id')?.value) || null
+        estado_manual: document.getElementById('estado_manual')?.value || null
     };
     
     try {
         let response;
         if (bienId) {
-            response = await API.put(`/bienes/${bienId}`, bienData);
+            response = await API.put(`/bienes/${bienId}`, data);
         } else {
-            response = await API.post('/bienes', bienData);
+            response = await API.post('/bienes', data);
         }
         
         if (response.success) {
-            alert(response.message || 'Equipo guardado exitosamente');
+            alert('✅ Equipo guardado exitosamente');
             document.getElementById('modal-bien').style.display = 'none';
             cargarInventario();
-            if (typeof initDashboard === 'function') initDashboard();
+            cargarDashboard();
         } else {
-            alert('Error: ' + (response.error || 'No se pudo guardar el equipo'));
+            alert('❌ Error: ' + (response.error || 'No se pudo guardar'));
         }
     } catch (error) {
-        console.error('Error guardando bien:', error);
-        alert('Error al guardar. Verifica que el código sea único.');
+        alert('❌ Error al guardar el equipo');
+        console.error(error);
     }
 });
 
-// Editar bien
-window.editarBien = async (id) => {
+// ============================================
+// EDITAR BIEN - CON TODOS LOS CAMPOS
+// ============================================
+window.editarBien = async function(id) {
     try {
         const response = await API.get(`/bienes/${id}`);
         if (response.success && response.data) {
-            const bien = response.data;
+            const b = response.data;
+            
             document.getElementById('modal-title').textContent = 'Editar Equipo';
-            document.getElementById('bien-id').value = bien.id;
-            document.getElementById('codigo').value = bien.codigo;
-            document.getElementById('nombre').value = bien.nombre;
-            document.getElementById('serie').value = bien.serie || '';
-            document.getElementById('modelo').value = bien.modelo || '';
-            document.getElementById('marca').value = bien.marca || '';
-            document.getElementById('ubicacion').value = bien.ubicacion || '';
-            document.getElementById('valor_contable').value = bien.valor_contable;
-            document.getElementById('depreciacion_acumulada').value = bien.depreciacion_acumulada || 0;
-            if (document.getElementById('custodio_id')) {
-                document.getElementById('custodio_id').value = bien.custodio_id || '';
+            document.getElementById('bien-id').value = b.id;
+            document.getElementById('codigo').value = b.codigo || '';
+            if (document.getElementById('codigo_anterior')) {
+                document.getElementById('codigo_anterior').value = b.codigo_anterior || '';
             }
+            document.getElementById('nombre').value = b.nombre || '';
+            document.getElementById('serie').value = b.serie || '';
+            if (document.getElementById('modelo')) {
+                document.getElementById('modelo').value = b.modelo || '';
+            }
+            document.getElementById('marca').value = b.marca || '';
+            if (document.getElementById('bodega')) {
+                document.getElementById('bodega').value = b.bodega || '';
+            }
+            document.getElementById('ubicacion').value = b.ubicacion || '';
+            if (document.getElementById('tipo_registro')) {
+                document.getElementById('tipo_registro').value = b.tipo_registro || '';
+            }
+            document.getElementById('fecha_ingreso').value = b.fecha_ingreso ? b.fecha_ingreso.split('T')[0] : '';
+            if (document.getElementById('fecha_asignacion')) {
+                document.getElementById('fecha_asignacion').value = b.fecha_asignacion ? b.fecha_asignacion.split('T')[0] : '';
+            }
+            if (document.getElementById('numero_acta')) {
+                document.getElementById('numero_acta').value = b.numero_acta || '';
+            }
+            if (document.getElementById('cantidad')) {
+                document.getElementById('cantidad').value = b.cantidad || 1;
+            }
+            document.getElementById('valor_contable').value = b.valor_contable || 0;
+            document.getElementById('depreciacion_acumulada').value = b.depreciacion_acumulada || 0;
+            if (document.getElementById('estado_manual')) {
+                document.getElementById('estado_manual').value = b.estado_manual || '';
+            }
+            
             document.getElementById('modal-bien').style.display = 'block';
         }
     } catch (error) {
-        console.error('Error cargando bien:', error);
-        alert('Error al cargar los datos del equipo');
+        alert('❌ Error al cargar los datos del equipo');
+        console.error(error);
     }
 };
 
-// Eliminar bien (soft delete - RN-04)
-window.eliminarBien = async (id) => {
-    if (confirm('¿Estás seguro de dar de baja este equipo? (Soft Delete - El registro quedará en la base de datos)')) {
-        try {
-            const response = await API.delete(`/bienes/${id}`);
-            if (response.success) {
-                alert('Equipo dado de baja exitosamente');
-                cargarInventario();
-                if (typeof initDashboard === 'function') initDashboard();
-            } else {
-                alert('Error: ' + (response.error || 'No se pudo eliminar el equipo'));
-            }
-        } catch (error) {
-            console.error('Error eliminando bien:', error);
-            alert('Error al dar de baja el equipo');
+// ============================================
+// ELIMINAR BIEN (SOFT DELETE)
+// ============================================
+window.eliminarBien = async function(id) {
+    if (!confirm('¿Estás seguro de dar de baja este equipo?')) return;
+    
+    try {
+        const response = await API.delete(`/bienes/${id}`);
+        if (response.success) {
+            alert('✅ Equipo dado de baja exitosamente');
+            cargarInventario();
+            cargarDashboard();
+        } else {
+            alert('❌ Error: ' + (response.error || 'No se pudo eliminar'));
         }
+    } catch (error) {
+        alert('❌ Error al eliminar el equipo');
+        console.error(error);
     }
 };
-
-// Filtros de inventario
-document.getElementById('search-equipo')?.addEventListener('input', filtrarInventario);
-document.getElementById('filter-estado')?.addEventListener('change', filtrarInventario);
-document.getElementById('filter-categoria')?.addEventListener('change', filtrarInventario);
-
-function filtrarInventario() {
-    const searchTerm = document.getElementById('search-equipo')?.value.toLowerCase() || '';
-    const estadoFiltro = document.getElementById('filter-estado')?.value || '';
-    const categoriaFiltro = document.getElementById('filter-categoria')?.value || '';
-    
-    let filtered = [...inventarioData];
-    
-    if (searchTerm) {
-        filtered = filtered.filter(bien => 
-            (bien.codigo && bien.codigo.toLowerCase().includes(searchTerm)) ||
-            (bien.nombre && bien.nombre.toLowerCase().includes(searchTerm)) ||
-            (bien.serie && bien.serie.toLowerCase().includes(searchTerm))
-        );
-    }
-    
-    if (estadoFiltro) {
-        filtered = filtered.filter(bien => bien.estado === estadoFiltro);
-    }
-    
-    if (categoriaFiltro) {
-        filtered = filtered.filter(bien => 
-            (bien.nombre && bien.nombre.toLowerCase().includes(categoriaFiltro.toLowerCase()))
-        );
-    }
-    
-    renderInventario(filtered);
-}
-
-// Select all functionality
-function actualizarSelectorTodos() {
-    const selectAll = document.getElementById('select-all');
-    if (selectAll) {
-        selectAll.addEventListener('change', (e) => {
-            document.querySelectorAll('.select-item').forEach(cb => {
-                cb.checked = e.target.checked;
-            });
-        });
-    }
-}
