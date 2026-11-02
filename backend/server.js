@@ -15,10 +15,18 @@ app.use(express.urlencoded({ extended: true }));
 // Importar rutas
 const bienesRoutes = require('./routes/bienes');
 const cursosRoutes = require('./routes/cursos');
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
+const ofertasRoutes = require('./routes/ofertas');
+const prematriculaRoutes = require('./routes/prematricula');
 
 // Rutas de la API (según SRS Sección 2.1)
 app.use('/api/bienes', bienesRoutes);
 app.use('/api/cursos', cursosRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/ofertas', ofertasRoutes);
+app.use('/api/prematricula', prematriculaRoutes);
 
 // Ruta de health check
 app.get('/api/health', (req, res) => {

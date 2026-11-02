@@ -784,9 +784,9 @@
         }
 
         // ============================================
-        // REGISTER ADMIN
+        // REGISTER ADMIN (Conectado a Backend Express + MySQL)
         // ============================================
-        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+        document.getElementById('registerFormSubmit').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -808,36 +808,69 @@
                 return;
             }
 
-            const users = getUsers();
-            for (let key in users) {
-                if (users[key].username === email) {
-                    showError('Este correo ya está registrado');
+            // Llamada real al Backend API REST para registrar en MySQL
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        correo: email,
+                        nombres: name,
+                        password: password,
+                        rol: 'admin'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showError(data.error || 'Error al registrar administrador');
                     return;
                 }
+
+                // Guardar también en localStorage para compatibilidad completa con el dashboard
+                const users = getUsers();
+                users['admin_' + Date.now()] = {
+                    username: email,
+                    password: password,
+                    name: name,
+                    role: 'Administrador',
+                    role_code: 'admin'
+                };
+                saveUsers(users);
+
+                showSuccess('✅ Administrador guardado en MySQL con contraseña encriptada (bcrypt) y token JWT.');
+                document.getElementById('registerFormSubmit').reset();
+                
+                setTimeout(function() {
+                    document.getElementById('registerForm').classList.remove('active');
+                    document.getElementById('toggleRegister').innerHTML = '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
+                }, 3000);
+
+            } catch (err) {
+                console.warn('Backend offline, guardando localmente:', err);
+                const users = getUsers();
+                users['admin_' + Date.now()] = {
+                    username: email,
+                    password: password,
+                    name: name,
+                    role: 'Administrador',
+                    role_code: 'admin'
+                };
+                saveUsers(users);
+                showSuccess('✅ Administrador creado localmente.');
+                document.getElementById('registerFormSubmit').reset();
+                setTimeout(function() {
+                    document.getElementById('registerForm').classList.remove('active');
+                    document.getElementById('toggleRegister').innerHTML = '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
+                }, 3000);
             }
-
-            users['admin_' + Date.now()] = {
-                username: email,
-                password: password,
-                name: name,
-                role: 'Administrador',
-                role_code: 'admin'
-            };
-
-            saveUsers(users);
-            showSuccess('✅ Administrador creado exitosamente. Ya puedes iniciar sesión.');
-            document.getElementById('registerFormSubmit').reset();
-            
-            setTimeout(function() {
-                document.getElementById('registerForm').classList.remove('active');
-                document.getElementById('toggleRegister').innerHTML = '<i class="fas fa-user-plus"></i> Registrar nuevo administrador';
-            }, 3000);
         });
 
         // ============================================
-        // LOGIN
+        // LOGIN (Conectado a Backend Express + MySQL)
         // ============================================
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -848,6 +881,40 @@
                 return;
             }
 
+            // Intentar login real con Backend Express
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: email, password: password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.data && data.data.token) {
+                        localStorage.setItem('sigic_token', data.data.token);
+                    }
+                    const user = {
+                        username: email,
+                        name: (data.data && data.data.usuario) ? data.data.usuario.nombres : 'Administrador SIGIC',
+                        role: 'Administrador',
+                        role_code: 'admin'
+                    };
+                    const session = { user: user, loggedIn: true, token: data.data.token, timestamp: new Date().toISOString() };
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('sigic_remember', 'true');
+                    } else {
+                        localStorage.removeItem('sigic_remember');
+                    }
+                    localStorage.setItem('sigic_session', JSON.stringify(session));
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+            } catch (err) {
+                console.warn('Backend API no disponible para login, verificando credenciales locales:', err);
+            }
+
+            // Fallback a usuarios locales
             const users = getUsers();
             let user = null;
             for (let key in users) {
