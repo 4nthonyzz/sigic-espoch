@@ -1,10 +1,10 @@
 # ==============================================================================
-# SCRIPT DE VERIFICACIÓN AUTOMATIZADA: FASES 1 A 3 (SIGIC-ESPOCH)
-# Ejecuta este script en PowerShell para verificar el funcionamiento del nuevo módulo.
+# SCRIPT DE VERIFICACION AUTOMATIZADA: FASES 1 A 3 (SIGIC-ESPOCH)
+# Ejecuta este script en PowerShell para verificar el funcionamiento del nuevo modulo.
 # ==============================================================================
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host " VERIFICACIÓN DE FASES 1 A 3: MÓDULO DE PRE-MATRÍCULA CISCO" -ForegroundColor Cyan
+Write-Host " VERIFICACION DE FASES 1 A 3: MODULO DE PRE-MATRICULA CISCO" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $baseUrl = "http://localhost:3002/api"
@@ -22,22 +22,22 @@ try {
     exit
 }
 
-# 2. PRUEBA DE AUTENTICACIÓN Y EVALUACIÓN DE TARIFAS (FASE 1)
-Write-Host "`n[2/6] Probando registro con evaluación automática de tarifas..."
+# 2. PRUEBA DE AUTENTICACION Y EVALUACION DE TARIFAS (FASE 1)
+Write-Host "`n[2/6] Probando registro con evaluacion automatica de tarifas..."
 
 # Alumno ESPOCH -> Tarifa institucional
 $correoEspoch = "alumno.$timestamp@espoch.edu.ec"
 $bodyEspoch = @{
     correo = $correoEspoch
     password = "password123"
-    nombres = "Estudiante Politécnico Test"
+    nombres = "Estudiante Politecnico Test"
     cedula = "0609998877"
     rol = "estudiante"
 } | ConvertTo-Json
 
 $resEspoch = Invoke-RestMethod -Uri "$baseUrl/auth/registro" -Method Post -Body $bodyEspoch -ContentType "application/json; charset=utf-8"
 if ($resEspoch.data.usuario.tarifa -eq "institucional") {
-    Write-Host "  -> Correo @espoch.edu.ec asignó tarifa INSTITUCIONAL: [CORRECTO]" -ForegroundColor Green
+    Write-Host "  -> Correo @espoch.edu.ec asigno tarifa INSTITUCIONAL: [CORRECTO]" -ForegroundColor Green
 } else {
     Write-Host "  -> Error asignando tarifa institucional" -ForegroundColor Red
 }
@@ -57,13 +57,13 @@ $bodyExterno = @{
 
 $resExterno = Invoke-RestMethod -Uri "$baseUrl/auth/registro" -Method Post -Body $bodyExterno -ContentType "application/json; charset=utf-8"
 if ($resExterno.data.usuario.tarifa -eq "general") {
-    Write-Host "  -> Correo externo asignó tarifa GENERAL: [CORRECTO]" -ForegroundColor Green
+    Write-Host "  -> Correo externo asigno tarifa GENERAL: [CORRECTO]" -ForegroundColor Green
 } else {
     Write-Host "  -> Error asignando tarifa general" -ForegroundColor Red
 }
 
-# 3. PRUEBA DE ADMINISTRADOR Y CATÁLOGO DE CURSOS (FASE 2)
-Write-Host "`n[3/6] Probando autenticación de Administrador y Catálogo..."
+# 3. PRUEBA DE ADMINISTRADOR Y CATALOGO DE CURSOS (FASE 2)
+Write-Host "`n[3/6] Probando autenticacion de Administrador y Catalogo..."
 $correoAdmin = "admin.$timestamp@espoch.edu.ec"
 $bodyAdmin = @{
     correo = $correoAdmin
@@ -78,13 +78,13 @@ $tokenAdmin = $resAdmin.data.token
 $headersAdmin = @{ Authorization = "Bearer $tokenAdmin" }
 
 $catalogo = Invoke-RestMethod -Uri "$baseUrl/admin/cursos-catalogo" -Method Get -Headers $headersAdmin
-Write-Host "  -> Catálogo consultado con éxito: $($catalogo.data.Count) cursos disponibles en ESPOCH." -ForegroundColor Green
+Write-Host "  -> Catalogo consultado con exito: $($catalogo.data.Count) cursos disponibles en ESPOCH." -ForegroundColor Green
 $cursoId = $catalogo.data[0].id
 
-# 4. PRUEBA DE CREACIÓN DE PARALELOS Y REGLA RN-08 (FASE 2)
-Write-Host "`n[4/6] Probando creación de oferta y regla de cupos RN-08..."
+# 4. PRUEBA DE CREACION DE PARALELOS Y REGLA RN-08 (FASE 2)
+Write-Host "`n[4/6] Probando creacion de oferta y regla de cupos RN-08..."
 
-# Caso inválido: cupo_maximo < cupo_minimo
+# Caso invalido: cupo_maximo < cupo_minimo
 try {
     $badOferta = @{
         curso_id = $cursoId
@@ -96,12 +96,12 @@ try {
         cupo_maximo = 10
     } | ConvertTo-Json
     Invoke-RestMethod -Uri "$baseUrl/admin/ofertas" -Method Post -Body $badOferta -Headers $headersAdmin -ContentType "application/json"
-    Write-Host "  -> [ERROR] No rechazó cupo máximo menor al mínimo" -ForegroundColor Red
+    Write-Host "  -> [ERROR] No rechazo cupo maximo menor al minimo" -ForegroundColor Red
 } catch {
-    Write-Host "  -> Bloqueo RN-08 (Cupo máximo < Cupo mínimo): [RECHAZADO CORRECTAMENTE]" -ForegroundColor Green
+    Write-Host "  -> Bloqueo RN-08 (Cupo maximo < Cupo minimo): [RECHAZADO CORRECTAMENTE]" -ForegroundColor Green
 }
 
-# Caso válido
+# Caso valido
 $goodOferta = @{
     curso_id = $cursoId
     paralelo = "P$timestamp"
@@ -116,10 +116,10 @@ $goodOferta = @{
 
 $ofertaCreada = Invoke-RestMethod -Uri "$baseUrl/admin/ofertas" -Method Post -Body $goodOferta -Headers $headersAdmin -ContentType "application/json"
 $ofertaId = $ofertaCreada.data.id
-Write-Host "  -> Paralelo creado con éxito (ID: $ofertaId) con 20 cupos disponibles." -ForegroundColor Green
+Write-Host "  -> Paralelo creado con exito (ID: $ofertaId) con 20 cupos disponibles." -ForegroundColor Green
 
 # 5. PRUEBA DE RESERVA DE CUPO CON BLOQUEO FOR UPDATE (FASE 3)
-Write-Host "`n[5/6] Probando reserva de cupo por estudiante y fijación de tarifa..."
+Write-Host "`n[5/6] Probando reserva de cupo por estudiante y fijacion de tarifa..."
 
 # Intento con pago menor al mínimo ($10 < $25)
 try {
@@ -129,9 +129,9 @@ try {
         comprobante = "TRANSF-INVALIDA"
     } | ConvertTo-Json
     Invoke-RestMethod -Uri "$baseUrl/prematricula/reservar" -Method Post -Body $badReserva -Headers $headersEstudiante -ContentType "application/json"
-    Write-Host "  -> [ERROR] No rechazó pago menor al mínimo" -ForegroundColor Red
+    Write-Host "  -> [ERROR] No rechazo pago menor al minimo" -ForegroundColor Red
 } catch {
-    Write-Host "  -> Bloqueo de pago menor al mínimo (\$10 < \$25): [RECHAZADO CORRECTAMENTE]" -ForegroundColor Green
+    Write-Host "  -> Bloqueo de pago menor al minimo (\$10 < \$25): [RECHAZADO CORRECTAMENTE]" -ForegroundColor Green
 }
 
 # Reserva exitosa (Abono de $25)
@@ -142,21 +142,21 @@ $goodReserva = @{
 } | ConvertTo-Json
 
 $reserva = Invoke-RestMethod -Uri "$baseUrl/prematricula/reservar" -Method Post -Body $goodReserva -Headers $headersEstudiante -ContentType "application/json"
-Write-Host "  -> Reserva completada con éxito. Costo fijado: `$$($reserva.data.costo_total) (Tarifa $($reserva.data.tarifa_aplicada))." -ForegroundColor Green
+Write-Host "  -> Reserva completada con exito. Costo fijado: `$$($reserva.data.costo_total) (Tarifa $($reserva.data.tarifa_aplicada))." -ForegroundColor Green
 
-# 6. VERIFICAR PREVENCIÓN DE DUPLICADOS Y DESCUENTO DE CUPOS (FASE 3)
-Write-Host "`n[6/6] Verificando prevención de doble reserva y actualización de cupos..."
+# 6. VERIFICAR PREVENCION DE DUPLICADOS Y DESCUENTO DE CUPOS (FASE 3)
+Write-Host "`n[6/6] Verificando prevencion de doble reserva y actualizacion de cupos..."
 
 try {
     Invoke-RestMethod -Uri "$baseUrl/prematricula/reservar" -Method Post -Body $goodReserva -Headers $headersEstudiante -ContentType "application/json"
-    Write-Host "  -> [ERROR] Permitió doble reserva al mismo usuario" -ForegroundColor Red
+    Write-Host "  -> [ERROR] Permitio doble reserva al mismo usuario" -ForegroundColor Red
 } catch {
-    Write-Host "  -> Prevención de duplicados para el mismo curso: [CORRECTO]" -ForegroundColor Green
+    Write-Host "  -> Prevencion de duplicados para el mismo curso: [CORRECTO]" -ForegroundColor Green
 }
 
 $ofertaCheck = Invoke-RestMethod -Uri "$baseUrl/ofertas/$ofertaId" -Method Get
 Write-Host "  -> Disponibilidad del paralelo en tiempo real: $($ofertaCheck.data.cupos_disponibles)/$($ofertaCheck.data.cupo_maximo) cupos." -ForegroundColor Green
 
 Write-Host "`n==========================================================" -ForegroundColor Cyan
-Write-Host " TODAS LAS PRUEBAS DE LAS FASES 1, 2 Y 3 PASARON CON ÉXITO " -ForegroundColor Green
+Write-Host " TODAS LAS PRUEBAS DE LAS FASES 1, 2 Y 3 PASARON CON EXITO " -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
